@@ -1,70 +1,134 @@
-# Stock Market Prediction with Deep Learning
-This Jupyter notebook provides a framework for predicting stock prices using machine learning techniques, specifically deep learning models. The project leverages various libraries, including PyTorch, pandas, and yfinance, to build and evaluate a model for stock market data analysis.
-## Key Libraries Used
-- **PyTorch**: For building and training neural networks.
-- **yfinance**: To fetch historical stock data from Yahoo Finance.
-- **Pandas**: Data manipulation and analysis.
-- **NumPy**: Numerical computing.
-- **TQDM**: For progress bars during data processing.
-- **Matplotlib** & **Seaborn**: For data visualization.
-- **Plotly**: Interactive plotting.
-- **Scikit-Learn**: For data preprocessing and model evaluation.
+# 📈 Stock Price Prediction with PyTorch
 
-## Setup
-
-To run this notebook, make sure to install the required libraries. You can do this using pip:
-
-```bash
-pip install torch numpy pandas tqdm yfinance seaborn matplotlib plotly scikit-learn tensorflow
-```
-
-## Project Structure
-
-1. **Data Acquisition**: Stock data is fetched using `yfinance`. In the notebook, the stock symbol (`symbol = "SISE.IS"`) is set to retrieve data for a specific stock (e.g., "SISE.IS" for a Turkish company). Historical data from a starting date is loaded for training the model.
-   
-2. **Data Preprocessing**: The data is prepared for machine learning by handling missing values and scaling features as needed.
-
-3. **Model Building**: PyTorch is used to build the neural network model. The model architecture involves using layers such as LSTM (Long Short-Term Memory) to predict future stock prices based on historical data.
-
-4. **Training**: The model is trained on the prepared data, with performance monitored via validation sets.
-
-5. **Evaluation**: The results are evaluated, and performance metrics such as accuracy and loss are displayed. Various plots visualize the model's predictions against the actual data.
-
-## Example Usage
-
-1. **Fetching Stock Data**: You can change the stock symbol in the code (e.g., `symbol = "SISE.IS"`) to fetch data for a different company.
-   
-2. **Training the Model**: After loading the data, the model is trained using the training dataset, and predictions are made on a test dataset.
-   
-3. **Visualizing Results**: The model’s predictions are visualized using plots to compare with the actual stock prices.
-
-## Notes
-- This notebook assumes that you have a basic understanding of stock market prediction and deep learning concepts.
-- Make sure that your environment has all the dependencies installed.
-- The model can be further optimized for better performance by tuning the hyperparameters or trying different architectures.
-
-## License
-
-This project is licensed under the MIT License.
+Bu proje, hisse senedi fiyatlarını tahmin etmek için **PyTorch** kullanarak derin öğrenme modelleri geliştirmektedir. 
+Proje, **yfinance** kütüphanesi kullanarak hisse senedi verilerini çeker ve **RNN / LSTM modelleri** ile tahminleme yapar. 
 
 ---
 
-# Stock Market Prediction Using Deep Learning
+## 📌 Özellikler
+✔️ Yahoo Finance üzerinden otomatik veri çekme  
+✔️ Veri görselleştirme (Matplotlib & Seaborn)  
+✔️ PyTorch ile RNN/LSTM modeli eğitimi  
+✔️ Eğitim ve test performans analizi  
 
-This project demonstrates how to predict stock market prices using deep learning techniques, specifically LSTM (Long Short-Term Memory) models, with PyTorch. It leverages historical stock data obtained through **Yahoo Finance** to forecast future price movements.
+---
 
-## Key Features:
-- **Data Fetching**: Automatically retrieves real-time stock data using the `yfinance` library.
-- **Deep Learning**: Utilizes **PyTorch** to build an LSTM model for time-series forecasting.
-- **Data Visualization**: Visualizes stock trends and model predictions using **Matplotlib** and **Plotly**.
-- **Comprehensive Analysis**: Combines data preprocessing, feature scaling, and model evaluation to provide an end-to-end solution for stock price prediction.
+## 🚀 Kurulum
 
-## Why This Project?
-- Learn how to apply **deep learning** to real-world financial data.
-- Implement **LSTM networks** for time-series forecasting.
-- Understand how to work with financial datasets and handle their unique challenges.
-- Improve stock price predictions and explore various machine learning methodologies for financial data analysis.
+Aşağıdaki komutları çalıştırarak gerekli tüm kütüphaneleri yükleyebilirsiniz:
 
-## Ready to Try?
-Clone this repository and start experimenting with your own stock symbols. The notebook is easy to follow and provides step-by-step guidance on training and testing the model.
+```bash
+pip install torch numpy pandas tqdm yfinance seaborn matplotlib plotly scikit-learn
+```
 
+---
+
+## 📊 Kullanılan Teknolojiler
+
+- **PyTorch** - Derin öğrenme modeli eğitimi  
+- **pandas & NumPy** - Veri işleme  
+- **yfinance** - Hisse senedi verisi çekme  
+- **Matplotlib & Seaborn** - Grafik çizimi  
+- **Plotly** - Etkileşimli veri görselleştirme  
+- **Scikit-learn** - Model değerlendirme  
+
+---
+
+## 🔧 Kullanım
+
+### 1️⃣ **Veri Setinin Çekilmesi**
+Aşağıdaki Python kodu ile **yfinance** kütüphanesi kullanılarak belirlenen hisse senedine ait geçmiş veriler çekilir:
+
+```python
+import yfinance as yf
+
+ticker = "AAPL"  # Apple hisse senedi (Örnek)
+df = yf.download(ticker, start="2020-01-01", end="2024-01-01")
+print(df.head())  # İlk 5 satırı göster
+```
+
+### 2️⃣ **Veri Ön İşleme**
+Veriler, eksik değerlerden temizlenir ve modelin kullanabileceği formatta ölçeklendirilir.
+
+```python
+from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler(feature_range=(0, 1))
+df_scaled = scaler.fit_transform(df["Close"].values.reshape(-1,1))
+```
+
+### 3️⃣ **PyTorch ile Model Eğitimi**
+📌 Aşağıdaki kod, **PyTorch LSTM modelini** eğitir:
+
+```python
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+class LSTMModel(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(LSTMModel, self).__init__()
+        self.lstm = nn.LSTM(input_size, hidden_size)
+        self.fc = nn.Linear(hidden_size, output_size)
+    
+    def forward(self, x):
+        lstm_out, _ = self.lstm(x)
+        output = self.fc(lstm_out[-1])
+        return output
+
+# Model oluşturma
+model = LSTMModel(input_size=1, hidden_size=50, output_size=1)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+criterion = nn.MSELoss()
+```
+
+---
+
+## 📉 Model Performansı ve Sonuçlar
+Eğitim tamamlandıktan sonra modelin performansı aşağıdaki gibi görselleştirilir:
+
+```python
+import matplotlib.pyplot as plt
+
+plt.plot(y_test, label="Gerçek Fiyat")
+plt.plot(y_pred, label="Tahmin Edilen Fiyat")
+plt.legend()
+plt.show()
+```
+
+---
+
+## 📂 Proje Dosya Yapısı
+
+```
+📂 StockPricePredict
+ ├── 📜 StockPricePredict.ipynb    # Model eğitim dosyası (Jupyter Notebook)
+ ├── 📜 README.md                  # Proje dökümantasyonu
+ ├── 📜 requirements.txt            # Gerekli kütüphaneler
+ └── 📜 data                        # Hisse senedi verileri (Opsiyonel)
+```
+
+---
+
+## 🔗 Kaynaklar
+- 📌 [Yahoo Finance API](https://www.yfinance.org/)
+- 📌 [PyTorch Documentation](https://pytorch.org/docs/stable/index.html)
+- 📌 [Scikit-learn Documentation](https://scikit-learn.org/stable/)
+
+---
+
+## 🤝 Katkıda Bulunma
+Proje ile ilgili öneri veya katkılarınız varsa **Pull Request (PR)** gönderebilirsiniz. Geliştirici topluluğuna katkı sağlamak için aşağıdaki adımları takip edebilirsiniz:
+
+1. 🍴 **Projeyi Fork'layın**
+2. 🛠️ **Geliştirme Yapın**
+3. 🔄 **Kodunuzu Güncelleyin**
+4. ✅ **Pull Request Gönderin**
+
+---
+
+## 📝 Lisans
+📌 **MIT Lisansı** - Bu projeyi özgürce kullanabilir, değiştirebilir ve geliştirebilirsiniz.
+
+---
+```
